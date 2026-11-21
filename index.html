@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord V2 Ticket & Middleman Hub</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        discord: {
+                            bg: '#0e0f12',
+                            card: '#16181d',
+                            sidebar: '#1e2026',
+                            channel: '#2b2d31',
+                            accent: '#5865f2',
+                            purple: '#7c3aed',
+                            purpleGlow: '#a855f7',
+                            cyan: '#38bdf8',
+                            success: '#23a55a',
+                            danger: '#ef4444',
+                            warning: '#f59e0b',
+                            muted: '#949ba4'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #0b0c10;
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(124, 58, 237, 0.15) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(56, 189, 248, 0.12) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(168, 85, 247, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .glass-panel {
+            background: rgba(22, 24, 29, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card-hover:hover {
+            transform: translateY(-4px);
+            border-color: rgba(168, 85, 247, 0.4);
+            box-shadow: 0 12px 30px -10px rgba(124, 58, 237, 0.3);
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { border-color: rgba(124, 58, 237, 0.5); }
+            50% { border-color: rgba(56, 189, 248, 0.5); }
+        }
+        .neon-border-pulse {
+            animation: borderGlow 4s infinite ease-in-out;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0e0f12;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2b2d31;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #7c3aed;
+        }
+    </style>
+</head>
+<body class="text-gray-100 font-sans min-h-screen flex flex-col antialiased selection:bg-discord-purple selection:text-white">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-discord-bg/80 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-discord-purple via-purple-600 to-discord-cyan p-0.5 shadow-lg shadow-discord-purple/30">
+                    <div class="w-full h-full bg-discord-bg rounded-[10px] flex items-center justify-center">
+                        <i class="fa-solid fa-ticket text-transparent bg-clip-text bg-gradient-to-tr from-discord-purpleGlow to-discord-cyan text-lg"></i>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-purple-300">
+                            TicketCraft V2
+                        </span>
+                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-discord-purple/20 text-discord-purpleGlow border border-discord-purple/40 uppercase tracking-wider">
+                            Render Active
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-discord-muted">Middleman & Support Bot Portal</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <div id="nav-health-badge" class="flex items-center space-x-2 px-3 py-1.5 rounded-full glass-panel border border-white/10 text-xs">
+                    <span id="nav-health-dot" class="w-2.5 h-2.5 rounded-full bg-discord-warning animate-pulse"></span>
+                    <span id="nav-health-text" class="text-discord-muted">Connecting...</span>
+                </div>
+                <a href="#demo" class="hidden sm:flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-discord-purple to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white text-xs font-bold transition-all shadow-md shadow-discord-purple/20">
+                    <i class="fa-solid fa-play text-xs"></i>
+                    <span>Live Simulator</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-10">
+
+        <!-- Hero Banner & Render Health Monitor -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            <div class="lg:col-span-7 glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute -top-24 -right-24 w-60 h-60 bg-discord-purple/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -left-24 w-60 h-60 bg-discord-cyan/15 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="space-y-4 z-10">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-discord-cyan">
+                        <i class="fa-solid fa-cloud text-xs"></i>
+                        <span>Render Cloud Web Service Ready</span>
+                    </div>
+
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                        Discord <span class="bg-clip-text text-transparent bg-gradient-to-r from-discord-purpleGlow via-indigo-400 to-discord-cyan">Components V2</span> Ticket System
+                    </h1>
+
+                    <p class="text-sm sm:text-base text-discord-muted leading-relaxed max-w-2xl">
+                        Single-file python Discord bot with live trade confirmations, staff ticket claiming, modal forms, and automatic Render port binding.
+                    </p>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 z-10">
+                    <div class="flex items-center space-x-3 bg-discord-bg/80 border border-white/10 px-4 py-2.5 rounded-xl flex-1 font-mono text-xs">
+                        <span class="text-discord-cyan">$</span>
+                        <span class="text-white font-semibold">/ticketpanel</span>
+                        <span class="text-discord-muted text-[10px] ml-auto">Server Command</span>
+                    </div>
+                    <button onclick="copyCommand('/ticketpanel')" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all flex items-center justify-center space-x-2 shrink-0">
+                        <i class="fa-solid fa-copy"></i>
+                        <span>Copy Slash Command</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5 glass-panel rounded-3xl p-6 flex flex-col justify-between relative border border-discord-purple/30 neon-border-pulse">
+                <div>
+                    <div class="flex items-center justify-between pb-4 border-b border-white/10">
+                        <div class="flex items-center space-x-2.5">
+                            <i class="fa-solid fa-server text-discord-purpleGlow text-base"></i>
+                            <h3 class="font-bold text-white text-sm">Render API Status</h3>
+                        </div>
+                        <button onclick="checkHealth()" class="text-discord-muted hover:text-white text-xs transition-colors" title="Refresh Status">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 mt-4">
+                        <div class="bg-discord-bg/60 p-3 rounded-xl border border-white/5">
+                            <span class="text-[10px] uppercase font-bold text-discord-muted block">System State</span>
+                            <span id="health-status-value" class="text-sm font-bold text-discord-warning flex items-center gap-1.5 mt-0.5">
+                                <i class="fa-solid fa-circle-dot text-[10px] animate-pulse"></i> Checking...
+                            </span>
+                        </div>
+                        <div class="bg-discord-bg/60 p-3 rounded-xl border border-white/5">
+                            <span class="text-[10px] uppercase font-bold text-discord-muted block">HTTP Latency</span>
+                            <span id="health-latency-value" class="text-sm font-bold text-white mt-0.5 block">-- ms</span>
+                        </div>
+                        <div class="bg-discord-bg/60 p-3 rounded-xl border border-white/5">
+                            <span class="text-[10px] uppercase font-bold text-discord-muted block">Bot Engine</span>
+                            <span class="text-xs font-bold text-discord-cyan mt-0.5 block">discord.py 2.7+</span>
+                        </div>
+                        <div class="bg-discord-bg/60 p-3 rounded-xl border border-white/5">
+                            <span class="text-[10px] uppercase font-bold text-discord-muted block">Port Binding</span>
+                            <span class="text-xs font-bold text-discord-success mt-0.5 block">Flask ($PORT)</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-3 rounded-xl bg-discord-purple/10 border border-discord-purple/20 text-xs text-discord-purpleGlow flex items-start space-x-2">
+                        <i class="fa-solid fa-circle-info text-sm mt-0.5 shrink-0"></i>
+                        <p class="leading-relaxed text-[11px]">
+                            Flask background thread satisfies Render's HTTP health checks while keeping the Discord Gateway WebSocket active 24/7.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-discord-muted">
+                    <span>Target Route: <code class="text-gray-300">/health</code></span>
+                    <span id="health-last-check">Checking...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category Forms Preview -->
+        <section class="space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <span>Ticket Modal Categories</span>
+                        <span class="text-xs px-2.5 py-0.5 rounded-full bg-discord-purple/20 text-discord-purpleGlow border border-discord-purple/30 font-semibold">4 Forms</span>
+                    </h2>
+                    <p class="text-xs text-discord-muted">Click any category card to preview its modal form layout.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div onclick="openModalPreview('order')" class="glass-panel glass-card-hover rounded-2xl p-5 cursor-pointer flex flex-col justify-between space-y-4 border-l-4 border-l-discord-cyan">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl p-2.5 rounded-xl bg-discord-cyan/10 border border-discord-cyan/20">🛒</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-discord-cyan/20 text-discord-cyan border border-discord-cyan/30 uppercase">Order Issue</span>
+                        </div>
+                        <h3 class="font-bold text-white text-base">Order Issue</h3>
+                        <p class="text-xs text-discord-muted mt-1 leading-relaxed">
+                            Form asking for Order ID / Receipt Reference and purchase details.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-white/5 flex items-center justify-between text-xs text-discord-cyan font-semibold">
+                        <span>Preview Modal</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </div>
+                </div>
+
+                <div onclick="openModalPreview('middleman')" class="glass-panel glass-card-hover rounded-2xl p-5 cursor-pointer flex flex-col justify-between space-y-4 border-l-4 border-l-discord-purpleGlow">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl p-2.5 rounded-xl bg-discord-purple/10 border border-discord-purple/20">🤝</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-discord-purple/20 text-discord-purpleGlow border border-discord-purple/30 uppercase">Escrow Trade</span>
+                        </div>
+                        <h3 class="font-bold text-white text-base">Middleman Request</h3>
+                        <p class="text-xs text-discord-muted mt-1 leading-relaxed">
+                            Form for item lists, partner username/ID, agreed trade conditions, and confirm button.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-white/5 flex items-center justify-between text-xs text-discord-purpleGlow font-semibold">
+                        <span>Preview Modal</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </div>
+                </div>
+
+                <div onclick="openModalPreview('report')" class="glass-panel glass-card-hover rounded-2xl p-5 cursor-pointer flex flex-col justify-between space-y-4 border-l-4 border-l-discord-danger">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl p-2.5 rounded-xl bg-discord-danger/10 border border-discord-danger/20">⚠️</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-discord-danger/20 text-discord-danger border border-discord-danger/30 uppercase">Report User</span>
+                        </div>
+                        <h3 class="font-bold text-white text-base">Report a User</h3>
+                        <p class="text-xs text-discord-muted mt-1 leading-relaxed">
+                            Form for target username/ID and evidence links to notify server moderators.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-white/5 flex items-center justify-between text-xs text-discord-danger font-semibold">
+                        <span>Preview Modal</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </div>
+                </div>
+
+                <div onclick="openModalPreview('general')" class="glass-panel glass-card-hover rounded-2xl p-5 cursor-pointer flex flex-col justify-between space-y-4 border-l-4 border-l-purple-500">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20">❓</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase">General</span>
+                        </div>
+                        <h3 class="font-bold text-white text-base">General Support</h3>
+                        <p class="text-xs text-discord-muted mt-1 leading-relaxed">
+                            Form for general inquiries regarding rules, roles, or server help.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-white/5 flex items-center justify-between text-xs text-purple-300 font-semibold">
+                        <span>Preview Modal</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Discord Message V2 Simulator -->
+        <section id="demo" class="space-y-4">
+            <div>
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <span>Live Discord Components V2 Simulator</span>
+                    <span class="px-2 py-0.5 text-xs rounded bg-discord-success/20 text-discord-success border border-discord-success/30 font-semibold">Interactive</span>
+                </h2>
+                <p class="text-xs text-discord-muted">Test how staff claiming, trade confirmations, and ticket closing work live.</p>
+            </div>
+
+            <div class="glass-panel rounded-3xl p-4 sm:p-6 border border-white/10 overflow-hidden">
+                <div class="bg-discord-channel rounded-2xl p-4 sm:p-6 border border-white/10 shadow-2xl space-y-6">
+                    <div class="flex items-start space-x-3.5">
+                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=LeeRonHelper&backgroundColor=7c3aed" class="w-10 h-10 rounded-full bg-discord-bg border border-white/10 shrink-0" alt="Bot Avatar">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-bold text-white text-sm sm:text-base">Lee Ron's Helper</span>
+                                <span class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-discord-purple text-white uppercase flex items-center gap-1">
+                                    <i class="fa-solid fa-check text-[9px]"></i> BOT
+                                </span>
+                                <span class="text-xs text-discord-muted">Today at 7:42 PM</span>
+                            </div>
+
+                            <div class="mt-3 rounded-xl bg-discord-sidebar p-4 border-l-4 border-discord-purpleGlow space-y-4 max-w-2xl shadow-lg">
+                                <div>
+                                    <h3 id="sim-title" class="text-lg font-bold text-white flex items-center gap-2">
+                                        🤝 Middleman Request Ticket
+                                    </h3>
+                                    <div class="text-xs text-discord-muted mt-1 flex flex-wrap gap-x-4 gap-y-1">
+                                        <span>Opened By: <strong class="text-white">AlexTrader#1234</strong></span>
+                                        <span>Status: <strong id="sim-status-badge" class="text-discord-warning">Open — Waiting for Staff</strong></span>
+                                    </div>
+                                </div>
+
+                                <div class="h-px bg-white/10"></div>
+
+                                <div class="space-y-3 text-xs">
+                                    <div>
+                                        <span class="text-discord-muted uppercase font-bold text-[10px] block">Trade Items & Other Trader</span>
+                                        <p id="sim-field-1" class="text-gray-200 mt-0.5 bg-discord-bg/60 p-2.5 rounded-lg border border-white/5 font-mono">
+                                            CS:GO Fade Knife for $350 Crypto (with @ShadowTrader#4321)
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <span class="text-discord-muted uppercase font-bold text-[10px] block">Agreed Terms & Notes</span>
+                                        <p id="sim-field-2" class="text-gray-200 mt-0.5 bg-discord-bg/60 p-2.5 rounded-lg border border-white/5">
+                                            Both parties agreed on 50/50 fee split. Buyer sends crypto first after MM holds item.
+                                        </p>
+                                    </div>
+
+                                    <div id="sim-confirm-block" class="bg-discord-purple/10 p-3 rounded-lg border border-discord-purple/20">
+                                        <span class="text-discord-purpleGlow font-bold block mb-1">Confirmations (<span id="sim-conf-count">0</span>):</span>
+                                        <div id="sim-conf-list" class="text-discord-muted italic">
+                                            • None yet — press <strong>Confirm Trade</strong> once ready.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="h-px bg-white/10"></div>
+
+                                <div class="flex flex-wrap items-center gap-2 pt-1">
+                                    <button onclick="simClaimTicket()" id="sim-btn-claim" class="px-4 py-2 rounded-lg bg-discord-channel hover:bg-white/10 text-white text-xs font-semibold flex items-center space-x-1.5 transition-all border border-white/10">
+                                        <i class="fa-solid fa-shield-halved text-discord-purpleGlow"></i>
+                                        <span>Claim Ticket</span>
+                                    </button>
+                                    <button onclick="simConfirmTrade()" id="sim-btn-confirm" class="px-4 py-2 rounded-lg bg-discord-success hover:bg-emerald-600 text-white text-xs font-semibold flex items-center space-x-1.5 transition-all">
+                                        <i class="fa-solid fa-check-circle"></i>
+                                        <span>Confirm Trade</span>
+                                    </button>
+                                    <button onclick="simCloseTicket()" id="sim-btn-close" class="px-4 py-2 rounded-lg bg-discord-danger hover:bg-red-600 text-white text-xs font-semibold flex items-center space-x-1.5 transition-all">
+                                        <i class="fa-solid fa-lock"></i>
+                                        <span>Close Ticket</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Render Deployment Guide -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass-panel rounded-2xl p-6 space-y-3">
+                <div class="w-10 h-10 rounded-xl bg-discord-purple/20 border border-discord-purple/30 flex items-center justify-center text-discord-purpleGlow font-bold">
+                    1
+                </div>
+                <h3 class="font-bold text-white text-base">Render Environment Variables</h3>
+                <p class="text-xs text-discord-muted leading-relaxed">
+                    Set <code class="text-discord-cyan">DISCORD_TOKEN</code>, <code class="text-gray-200">GUILD_ID</code>, <code class="text-gray-200">STAFF_ROLE_ID</code>, and <code class="text-gray-200">LOG_CHANNEL_ID</code> in Render's Environment tab.
+                </p>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 space-y-3">
+                <div class="w-10 h-10 rounded-xl bg-discord-purple/20 border border-discord-purple/30 flex items-center justify-center text-discord-purpleGlow font-bold">
+                    2
+                </div>
+                <h3 class="font-bold text-white text-base">Build & Start Commands</h3>
+                <p class="text-xs text-discord-muted leading-relaxed">
+                    Build Command: <code class="text-discord-cyan">pip install -r requirements.txt</code><br>
+                    Start Command: <code class="text-discord-cyan">python main.py</code>
+                </p>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 space-y-3">
+                <div class="w-10 h-10 rounded-xl bg-discord-purple/20 border border-discord-purple/30 flex items-center justify-center text-discord-purpleGlow font-bold">
+                    3
+                </div>
+                <h3 class="font-bold text-white text-base">Slash Command Setup</h3>
+                <p class="text-xs text-discord-muted leading-relaxed">
+                    In Discord, run <code class="text-discord-cyan">/ticketpanel</code> to post the main ticket hub card into your support channel.
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Form -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-discord-sidebar w-full max-w-lg rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+            <div class="px-6 py-4 bg-discord-bg border-b border-white/10 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <span id="modal-icon" class="text-xl">🛒</span>
+                    <h3 id="modal-title" class="font-bold text-white text-base">Order Issue Form</h3>
+                </div>
+                <button onclick="closeModalPreview()" class="text-discord-muted hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleModalSubmit(event)" class="p-6 space-y-4">
+                <div>
+                    <label id="modal-f1-label" class="block text-xs font-semibold text-discord-muted mb-1">Field 1</label>
+                    <input type="text" id="modal-f1-input" required placeholder="Enter details..." class="w-full bg-discord-bg text-white text-xs p-3 rounded-lg border border-white/10 focus:outline-none focus:border-discord-purple">
+                </div>
+                <div>
+                    <label id="modal-f2-label" class="block text-xs font-semibold text-discord-muted mb-1">Field 2</label>
+                    <textarea id="modal-f2-input" rows="3" required placeholder="Describe issue..." class="w-full bg-discord-bg text-white text-xs p-3 rounded-lg border border-white/10 focus:outline-none focus:border-discord-purple"></textarea>
+                </div>
+
+                <div class="pt-3 border-t border-white/10 flex justify-end space-x-3">
+                    <button type="button" onclick="closeModalPreview()" class="px-4 py-2 rounded-lg bg-white/5 text-discord-muted hover:text-white text-xs font-semibold">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-lg bg-discord-purple hover:bg-purple-600 text-white text-xs font-bold shadow-lg flex items-center space-x-1.5">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Submit Ticket</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+    <script>
+        const simState = {
+            category: 'middleman',
+            claimed: false,
+            claimedBy: null,
+            confirmedUsers: []
+        };
+
+        async function checkHealth() {
+            const statusVal = document.getElementById('health-status-value');
+            const latencyVal = document.getElementById('health-latency-value');
+            const lastCheck = document.getElementById('health-last-check');
+            const navDot = document.getElementById('nav-health-dot');
+            const navText = document.getElementById('nav-health-text');
+
+            const startTime = performance.now();
+            const nowTimeStr = new Date().toLocaleTimeString();
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+                const response = await fetch('/health', { 
+                    method: 'GET',
+                    signal: controller.signal 
+                });
+
+                clearTimeout(timeoutId);
+                const duration = Math.round(performance.now() - startTime);
+
+                if (response.ok) {
+                    statusVal.className = 'text-sm font-bold text-discord-success flex items-center gap-1.5 mt-0.5';
+                    statusVal.innerHTML = `<i class="fa-solid fa-circle-check text-discord-success text-[10px]"></i> Online (200 OK)`;
+                    latencyVal.textContent = `${duration} ms`;
+                    navDot.className = 'w-2.5 h-2.5 rounded-full bg-discord-success';
+                    navText.textContent = 'Render Server Online';
+                    navText.className = 'text-discord-success font-semibold';
+                } else {
+                    throw new Error('Non-200 response');
+                }
+            } catch (err) {
+                statusVal.className = 'text-sm font-bold text-discord-purpleGlow flex items-center gap-1.5 mt-0.5';
+                statusVal.innerHTML = `<i class="fa-solid fa-circle-dot text-discord-purpleGlow text-[10px]"></i> Preview Mode`;
+                latencyVal.textContent = `< 1 ms`;
+                navDot.className = 'w-2.5 h-2.5 rounded-full bg-discord-purpleGlow';
+                navText.textContent = 'Preview Mode';
+                navText.className = 'text-discord-purpleGlow font-semibold';
+            }
+
+            lastCheck.textContent = `Last check: ${nowTimeStr}`;
+        }
+
+        const categoryData = {
+            order: {
+                icon: '🛒',
+                title: 'Order Issue — Form Preview',
+                f1: 'Order ID / Receipt Reference',
+                f1_ph: 'e.g. ORD-94821 or payment transaction ID',
+                f2: 'What Went Wrong With Your Order?',
+                f2_ph: 'Describe item bought, amount, and issue...'
+            },
+            middleman: {
+                icon: '🤝',
+                title: 'Middleman Request — Form Preview',
+                f1: 'Trade Items & Other Trader (@user / ID)',
+                f1_ph: 'CS:GO Knife for $350 Crypto with @ShadowTrader',
+                f2: 'Agreed Terms & Notes',
+                f2_ph: 'Both parties agreed on 50/50 fee split...'
+            },
+            report: {
+                icon: '⚠️',
+                title: 'Report a User — Form Preview',
+                f1: 'Reported User (Username or User ID)',
+                f1_ph: 'e.g. ScammerUser#9999 (ID: 123456789)',
+                f2: 'Violation & Evidence Links',
+                f2_ph: 'Paste message links or proof screenshots...'
+            },
+            general: {
+                icon: '❓',
+                title: 'General Support — Form Preview',
+                f1: 'Topic / Question Summary',
+                f1_ph: 'e.g. Question regarding server VIP ranks',
+                f2: 'Details',
+                f2_ph: 'Write your question or request clearly...'
+            }
+        };
+
+        function openModalPreview(key) {
+            const data = categoryData[key];
+            if (!data) return;
+
+            document.getElementById('modal-icon').textContent = data.icon;
+            document.getElementById('modal-title').textContent = data.title;
+            document.getElementById('modal-f1-label').textContent = data.f1;
+            document.getElementById('modal-f1-input').placeholder = data.f1_ph;
+            document.getElementById('modal-f2-label').textContent = data.f2;
+            document.getElementById('modal-f2-input').placeholder = data.f2_ph;
+
+            document.getElementById('modal-overlay').classList.remove('hidden');
+        }
+
+        function closeModalPreview() {
+            document.getElementById('modal-overlay').classList.add('hidden');
+        }
+
+        function handleModalSubmit(e) {
+            e.preventDefault();
+            const f1 = document.getElementById('modal-f1-input').value;
+            const f2 = document.getElementById('modal-f2-input').value;
+
+            document.getElementById('sim-field-1').textContent = f1;
+            document.getElementById('sim-field-2').textContent = f2;
+            
+            closeModalPreview();
+            showToast('Simulated ticket created! Check simulator below.', 'success');
+            document.getElementById('demo').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function simClaimTicket() {
+            if (simState.claimed) {
+                showToast('Ticket is already claimed!', 'warning');
+                return;
+            }
+            simState.claimed = true;
+            simState.claimedBy = 'Staff_Mod#7777';
+
+            document.getElementById('sim-status-badge').textContent = 'Claimed by Staff_Mod#7777';
+            document.getElementById('sim-status-badge').className = 'text-discord-purpleGlow font-bold';
+            
+            const btn = document.getElementById('sim-btn-claim');
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            btn.innerHTML = `<i class="fa-solid fa-check text-discord-success"></i> <span>Claimed</span>`;
+
+            showToast('Ticket claimed by Staff_Mod#7777', 'info');
+        }
+
+        function simConfirmTrade() {
+            const testUsers = ['AlexTrader#1234', 'Staff_Mod#7777', 'ShadowTrader#4321'];
+            const nextUser = testUsers[simState.confirmedUsers.length % testUsers.length];
+
+            if (simState.confirmedUsers.includes(nextUser)) {
+                showToast('All trade parties have already confirmed!', 'info');
+                return;
+            }
+
+            simState.confirmedUsers.push(nextUser);
+            
+            const listEl = document.getElementById('sim-conf-list');
+            const countEl = document.getElementById('sim-conf-count');
+            
+            countEl.textContent = simState.confirmedUsers.length;
+            listEl.innerHTML = simState.confirmedUsers.map(u => `• <span class="text-discord-purpleGlow font-semibold">${u}</span> ✅`).join('<br>');
+
+            showToast(`Trade confirmed by ${nextUser}`, 'success');
+        }
+
+        function simCloseTicket() {
+            showToast('🔒 Ticket channel deletion initiated.', 'danger');
+            
+            setTimeout(() => {
+                simState.claimed = false;
+                simState.claimedBy = null;
+                simState.confirmedUsers = [];
+
+                document.getElementById('sim-status-badge').textContent = 'Open — Waiting for Staff';
+                document.getElementById('sim-status-badge').className = 'text-discord-warning font-bold';
+                
+                const btn = document.getElementById('sim-btn-claim');
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.innerHTML = `<i class="fa-solid fa-shield-halved text-discord-purpleGlow"></i> <span>Claim Ticket</span>`;
+
+                document.getElementById('sim-conf-count').textContent = '0';
+                document.getElementById('sim-conf-list').innerHTML = '• None yet — press <strong>Confirm Trade</strong> once ready.';
+            }, 1200);
+        }
+
+        function copyCommand(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast(`Copied command: ${text}`, 'info');
+        }
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let accentBorder = 'border-discord-purpleGlow';
+            let icon = 'fa-circle-info text-discord-purpleGlow';
+            if (type === 'success') { accentBorder = 'border-discord-success'; icon = 'fa-circle-check text-discord-success'; }
+            if (type === 'warning') { accentBorder = 'border-discord-warning'; icon = 'fa-triangle-exclamation text-discord-warning'; }
+            if (type === 'danger') { accentBorder = 'border-discord-danger'; icon = 'fa-lock text-discord-danger'; }
+
+            toast.className = `pointer-events-auto flex items-center space-x-2.5 px-4 py-3 rounded-xl glass-panel border ${accentBorder} text-xs font-semibold text-white shadow-2xl transition-all`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-sm"></i> <span>${msg}</span>`;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        window.addEventListener('load', () => {
+            checkHealth();
+        });
+    </script>
+</body>
+</html>
